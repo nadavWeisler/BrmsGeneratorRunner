@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block script %}
+    <link href="../static/css/upload_css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+
+{% block body %}
+    <h1 class="page-header">Upload Stimulus</h1>
+    <form method="post" enctype=multipart/form-data onload="getId()">
+        <div class="form-group">
+            <div>
+                <label for="name_input">
+                    Enter Experiment Name
+                    <input class="form-control"
+                           id="name_input"
+                           name="name_input"
+                           type="text">
+                </label>
+            </div>
+            <div>
+                <label for="imagesInput">
+                    Choose images
+                    <input type="file"
+                           name="imagesInput"
+                           id="imagesInput"
+                           accept=".zip"
+                           class="custom-file-control"
+                           multiple
+                    />
+                </label>
+            </div>
+            <div aria-rowspan="2">
+                <button id="submitButton"
+                        class="btn btn-primary btn-lg btn-block"
+                        type="submit"
+                        onclick="activateLoadingPanel()">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

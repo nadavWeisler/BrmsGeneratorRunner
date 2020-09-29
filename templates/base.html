@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="eng">
+<head>
+    <title>{{ title }}</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-firestore.js"></script>
+    <script id="codingScript">
+        document.addEventListener("beforeload", function () {
+            onLoad();
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCcP40J5jS0Xc5tLwIx7X19059KPMBkvgk",
+                authDomain: "popup-965c9.firebaseapp.com"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    document.getElementById("dashboardLink").href = "/dashboard/" + user.uid;
+                    document.getElementById("uploadLink").href = "/upload/" + user.uid;
+                    document.getElementById("exportLink").href = "/export";
+                    document.getElementById("uploadImages").href = "/upload_images";
+                } else {
+                    window.location.assign('/login');
+                }
+            });
+        }, false);
+
+        function signOut() {
+            firebase.auth().signOut().then(function () {
+                window.location.assign('/login');
+            }, function (error) {
+                // An error happened.
+            });
+        }
+
+        function postId(url, id) {
+            // POST to session login endpoint.
+            return $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: "json",
+                data: {idToken: id},
+                contentType: 'application/x-www-form-urlencoded',
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true
+            });
+        }
+
+        function getCookie(cookie_name) {
+            // Get name followed by anything except a semicolon
+            var cookie_string = RegExp("" + cookie_name + "[^;]+").exec(document.cookie);
+            // Return everything after the equal sign
+            return unescape(!!cookie_string ? cookie_string.toString().replace(/^[^=]+./, "") : "");
+        }
+
+        function postIdTokenToSessionLogin(url, idToken, csrfToken) {
+            // POST to session login endpoint.
+            return $.ajax({
+                type: 'POST',
+                url: url,
+                dataType: "json",
+                data: {idToken: idToken, csrfToken: csrfToken},
+                contentType: 'application/x-www-form-urlencoded',
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true
+            });
+        }
+
+        function getLink(str) {
+            return "/" + str + "/" + uid;
+        }
+
+        function activateLoadingPanel() {
+            document.getElementById("loadingDiv").style.visibility = "visible";
+        }
+
+        function onLoad() {
+            try {
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCcP40J5jS0Xc5tLwIx7X19059KPMBkvgk",
+                    authDomain: "popup-965c9.firebaseapp.com"
+                };
+                // Initialize Firebase
+                firebase.initializeApp(firebaseConfig);
+                firebase.auth().onAuthStateChanged((user) => {
+                    if (user) {
+                        uid = user.uid;
+                        console.log("LogIn")
+                    } else {
+                        window.location.assign('/login');
+                    }
+                });
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+    </script>
+
+    {% block extantions %}
+    {% endblock %}
+    {% block script %}
+    {% endblock %}
+
+    {#css#}
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="../static/css/main.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Droid+Serif|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+<body>
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-analytics.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.6.1/firebase-firestore.js"></script>
+<nav class="navbar navbar-light bg-light navbar-expand-lg">
+    <a class="navbar-brand" href="/">bRMS</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" id="dashboardLink" href="">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="uploadLink" href="">Upload</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="exportLink" href="">Export</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="uploadImages" href="">Add Stimulus</a>
+            </li>
+        </ul>
+        <button class="btn btn-danger navbar-btn" type="button" onclick="signOut()">
+            Logout
+        </button>
+    </div>
+</nav>
+<div id="container">
+    {% block body %}
+    {% endblock %}
+    <div class="h-divider"></div>
+    <div id="loadingDiv" style="visibility: collapse" class="d-flex align-items-center">
+        <strong>Loading...</strong>
+        <div class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
+    </div>
+    <div id="dpiDiv" style="height: 1mm; width: 1mm; visibility: collapse"></div>
+</div>
+
+</body>
+</html>

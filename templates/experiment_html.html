@@ -1,0 +1,155 @@
+<html lang="en" style="background: {{ background_color }}">
+<head>
+    <title>{{ title }}</title>
+
+    <script src="../static/lib/jquery-min.js" type="text/javascript"></script>
+    <script src="../static/lib/underscore-min.js" type="text/javascript"></script>
+    <script src="../static/lib/backbone-min.js" type="text/javascript"></script>
+    <script src="../static/lib/TweenMax.min.js"></script>
+    <script src="../static/lib/CustomEase.js"></script>
+
+    {# JSPSYCH #}
+    <script src="../static/js/jspsych/jspsych.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-html-keyboard-response.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-instructions.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-fullscreen.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-html-button-response.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-brms.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-brms-test.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-survey-likert.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-survey-text.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-survey-multi-choice.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-image-keyboard-response.js" type="text/javascript"></script>
+    <script src="../static/js/jspsych/plugins/jspsych-image-button-response.js" type="text/javascript"></script>
+
+    {# SRC #}
+    <script src="../static/js/src/Consts.js" type="text/javascript"></script>
+    <script src="../static/js/src/Experiment.js" type="text/javascript"></script>
+    <script src="../static/js/src/Trial.js" type="text/javascript"></script>
+    <script src="../static/js/src/bRMS.js" type="text/javascript"></script>
+    <script src="../static/js/src/Survey.js" type="text/javascript"></script>
+
+    {# CSS #}
+    <link href="../static/css/jspsych.css" rel="stylesheet" type="text/css"/>
+    <link href="../static/css/experiment_style.css" rel="stylesheet" type="text/css"/>
+
+    {# Scripts #}
+    <script>
+        function AddBrmsTest(timeline) {
+            let test_animation = {
+                    type: 'bRMS-test',
+                    timeline: [{
+                        stimulus: "static/example_images/example1.jpg",
+                        prompt: "<p>Testing for the \
+                          compatibility of your personal computer with this HIT.</p> \
+                          <p>This will take approximately 15 seconds more.</p>"
+                    },
+                        {
+                            stimulus: "static/example_images/example2.jpg",
+                            prompt: "<p>Testing for the \
+                          compatibility of your personal computer with this HIT.</p> \
+                          <p>This will take approximately 10 seconds more.</p>"
+                        },
+                        {
+                            stimulus: "static/example_images/example3.jpg",
+                            prompt: "<p>Testing for the \
+                                  compatibility of your personal computer with this HIT.</p> \
+                                  <p>This will take approximately 5 seconds more.</p>"
+                        }
+                    ],
+                    data: {
+                        testing: True
+                    },
+                    stimulus_alpha: 0.4,
+                    within_ITI: 1000 - 100,
+                    timing_response: 4,
+                    fade_in_time: 1,
+                    fade_out_time: 15,
+                    fade_out_length: 5,
+                    visUnit: 4,
+                    choices: ["none"]
+                },
+                poor_animation = {
+                    type: 'html-keyboard-response',
+                    conditional_function: function () {
+                        return jsPsych.data.get().last(3).select('sProblem').sum() > 8 ||
+                            jsPsych.data.get().last(3).select('bProblem').sum() > 2;
+                    },
+                    timeline: [{
+                        stimulus: "<div class = 'center'>\
+                            <p>It seems that the animation is not presented correctly on your computer.</p>\
+                            <p>This may be due to old hardware, or too many open applications.</p>\
+                            <p>Press the space bar to continue.</p></div>"
+                    }],
+                    choices: [32],
+                    //** needed eventualy **//
+                    on_finish: function () {
+                        jsPsych.endExperiment('The experiment has been aborted.');
+                    }
+                };
+            return [test_animation, poor_animation].concat(timeline);
+        }
+
+        function runFullTask(brms_exist, timeline) {
+            let full_timeline = timeline;
+            if (brms_exist) {
+                full_timeline = AddBrmsTest(timeline);
+            }
+            let exp_start_time = 0;
+            let d = new Date();
+            jsPsych.init({
+                timeline: full_timeline,
+                fullscreen: true,
+                on_finish: function () {
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", window.location.href, true);
+                    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                    xhr.send(jsPsych.data.get().json());
+                },
+                on_trial_start: function () {
+                    // Record start time of bRMS block
+                    if (exp_start_time === 0 && jsPsych.currentTrial().type === 'bRMS') {
+                        exp_start_time = d.getTime();
+                    }
+                }
+            });
+        }
+
+        runFullTask(false, {{ timeline | tojson }});
+
+        function submitResults(data) {
+            const mapForm = document.createElement("form");
+            mapForm.enctype = "multipart/form-data";
+            mapForm.method = "POST";
+
+            //Create an iframe
+            const iframe = document.createElement("iframe");
+            iframe.src = "response.php";
+            iframe.name = "myIframe";
+            iframe.style.width = '1px';
+            iframe.style.height = '1px';
+            iframe.style.visibility = 'hidden';
+            iframe.style.position = 'absolute';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            mapForm.appendChild(iframe);
+
+            // Create an input
+            let mapInput = document.createElement("input");
+            mapInput.type = "file";
+            mapInput.name = "uploaded";
+            mapInput.id = "uploaded";
+            mapInput.value = data;
+            mapInput.style.visibility = "hidden";
+            // Add the input to the form
+            mapForm.appendChild(mapInput);
+            // Add the form to dom
+            document.body.appendChild(mapForm);
+            // Just submit
+            mapForm.submit();
+            // Remove mapForm
+            document.body.removeChild(mapForm);
+        }
+    </script>
+</head>
+</html>

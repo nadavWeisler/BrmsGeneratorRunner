@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block script %}
+    {#css#}
+    <link href="../static/css/dashboard.css" rel="stylesheet" type="text/css"/>
+
+    <script id="script code">
+        function deleteExperiment(exp_id) {
+            const answer = window.confirm("Delete experiment " + exp_id + "?");
+            if (answer) {
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", '/delete_experiment', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.send(JSON.stringify({
+                    value: exp_id
+                }));
+            }
+        }
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div>
+        <div id="headingDiv">
+            <h1>Experiment List</h1>
+        </div>
+        <div id="refreshButtonDiv">
+            <button class="btn btn-secondary" onclick="location.reload()" type="button">
+                Refresh
+            </button>
+        </div>
+        <div id="tableDiv">
+            <table class="rwd-table">
+                <tr>
+                    <th>Name</th>
+                    <th>ID</th>
+                    <th>Link</th>
+                    <th>Count</th>
+                    <th>Detail</th>
+                    <th>Delete</th>
+                </tr>
+                {% for item in lst %}
+                    <tr>
+                        <td>{{ item[0] }}</td>
+                        <td>{{ item[1] }}</td>
+                        <td>
+                            <a onclick="activateLoadingPanel()" href={{ "/experiment/" + item[1] }}>
+                                Link
+                            </a>
+                        </td>
+                        <td>{{ item[2] }}</td>
+                        <td>
+                            <a class="btn btn-info"
+                               href={{ "/details/" + item[1] }}>
+                                Details
+                            </a>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteExperiment('{{ item[1] }}')">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

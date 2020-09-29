@@ -1,0 +1,54 @@
+{
+  "test": [
+    {
+      "type": "bRMS-test",
+      "timeline": [
+        {
+          "stimulus": "all_images[1]",
+          "prompt": "<p>Testing for the compatibility of your personal computer with this HIT.</p> <p>This will take approximately 15 seconds more.</p>"
+        },
+        {
+          "stimulus": "all_images[1]",
+          "prompt": "<p>Testing for the compatibility of your personal computer with this HIT.</p> <p>This will take approximately 10 seconds more.</p>"
+        },
+        {
+          "stimulus": "all_images[1]",
+          "prompt": "<p>Testing for the compatibility of your personal computer with this HIT.</p> <p>This will take approximately 5 seconds more.</p>"
+        }
+      ],
+      "data": {
+        "timing_response": 4,
+        "stimulus_alpha": "stimAlphas",
+        "timing_post_trial": 100,
+        "within_ITI": 100,
+        "fade_in_time": 1,
+        "fade_out_time": 1,
+        "fade_out_length": 1
+      },
+      "stimulus_alpha": 4,
+      "timing_post_trial": 100,
+      "within_ITI": 100,
+      "timing_response": 4,
+      "fade_in_time": 4,
+      "fade_out_time": 44,
+      "fade_out_length": 4,
+      "visUnit": 4,
+      "choices": [
+        "none"
+      ]
+    },
+    {
+      "type": "html-keyboard-response",
+      "timeline": [
+        {
+          "stimulus": "<div class = 'center'> <p>It seems that the animation is not presented correctly on your computer.</p> <p>This may be due to old hardware, or too many open applications.</p> <p><b>Please return this HIT</b>.</p> <p>We'll be glad to see you participating in future HITs.</p> <p>For any questions, please email yaniv.abir+mturk@mail.huji.ac.il</p> <p>Press the space bar to continue.</p></div>"
+        }
+      ],
+      "choices": [
+        32
+      ],
+      "conditional_function": "conditional_function_poor_animation",
+      "on_finish": "on_finish_poor_animation"
+    }
+  ]
+}

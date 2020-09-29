@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block script %}
+    <script>
+        function validate_form() {
+            if (document.getElementById("file_input").value === "" ||
+                document.getElementById("file_input").value === null) {
+                alert('please enter a file');
+                return false;
+            }
+            if (document.getElementById("name_input").value === "" ||
+                document.getElementById("name_input").value === null) {
+                alert('please enter a CSV file name');
+                return false;
+            }
+            if (document.getElementById("removeAllData").checked) {
+                if (!window.confirm("You sure you want to delete all data?")) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function get_folder(e) {
+            var files = e.target.files;
+            var path = files[0].webkitRelativePath;
+            var Folder = path.split("/");
+            alert(Folder[0]);
+        }
+    </script>
+    <link href="../static/css/upload_css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block body %}
+    <form name="form1" onsubmit="return validate_form()" method="post" enctype=multipart/form-data>
+        <div class="form-group">
+            <h1 class="page-header">Export Experiment</h1>
+            <div>
+                <label for="id_input">
+                    Enter Experiment ID
+                    <input class="form-control" id="id_input" name="id_input" type="text">
+                </label>
+            </div>
+            <div>
+                <label for="removeAllData">
+                    Delete All Data
+                    <input type="checkbox" id="removeAllData">
+                </label>
+            </div>
+            <div>
+                <button class="btn btn-primary btn-lg btn-block" type="submit">
+                    Submit
+                </button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

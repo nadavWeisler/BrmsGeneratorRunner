@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block script %}
+{% endblock %}
+
+
+{% block body %}
+    {% for item in lst %}
+        <table class="table">
+            <thead class="thead-dark">
+                <th>{{ item["name"] + " - " + item["type"] }}</th>
+            </thead>
+            <tbody>
+            {% for inner_item in item %}
+                {% if inner_item != "name" and inner_item != "type" %}
+                    <tr>
+                        <th>{{ inner_item }}</th>
+                        <td>{{ item[inner_item] }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block script %}
+    <script>
+        document.addEventListener("beforeload", function () {
+            onLoad();
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const firebaseConfig = {
+                apiKey: "AIzaSyCcP40J5jS0Xc5tLwIx7X19059KPMBkvgk",
+                authDomain: "popup-965c9.firebaseapp.com"
+            };
+            // Initialize Firebase
+            firebase.initializeApp(firebaseConfig);
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    document.getElementById("dashboardLink").href = "/dashboard/" + user.uid;
+                    document.getElementById("uploadLink").href = "/upload/" + user.uid;
+                    document.getElementById("exportLink").href = "/export/" + user.uid;
+                } else {
+                    window.location.assign('/login');
+                }
+            });
+        }, false);
+    </script>
+    <link href="../static/css/upload_css" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block body %}
+    <img id="startImg" src="../static/home-logo.gif" alt="LabConscious">
+{% endblock %}
